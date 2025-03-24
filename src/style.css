@@ -24,7 +24,7 @@
   --mine-border: #990000;
 }
 
-/* Apply the gradient to both html and body for better coverage */
+/* Apply basic styling to html and body */
 html, body {
   height: 100%;
   margin: 0;
@@ -35,21 +35,7 @@ body {
   color: var(--text-color);
   font-family: 'Futura', 'Montserrat', sans-serif;
   overflow: hidden;
-  
-  /* Multiple background options for better browser support */
-  background: linear-gradient(135deg, 
-    var(--gradient-color-top-left), 
-    var(--gradient-color-top-right) 50%, 
-    var(--gradient-color-bottom) 100%);
-  background-attachment: fixed;
-  
-  /* Add a subtle radial gradient overlay for depth */
-  background-image: 
-    radial-gradient(circle at center, transparent 0%, rgba(0,0,0,0.3) 100%),
-    linear-gradient(135deg, 
-      var(--gradient-color-top-left), 
-      var(--gradient-color-top-right) 50%, 
-      var(--gradient-color-bottom) 100%);
+  background-color: #000; /* Fallback color if PIXI animation fails */
 }
 
 #app {

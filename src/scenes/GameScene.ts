@@ -4,7 +4,7 @@ import { BetPanel } from '../ui/BetPanel';
 import { StatsPanel } from '../ui/StatsPanel';
 import { GameManager } from '../managers/GameManager';
 import { ConnectionManager } from '../managers/ConnectionManager';
-import { GradientBackground } from '../ui/GradientBackground';
+import { AnimatedGradientBackground } from '../ui/AnimatedGradientBackground';
 
 export class GameScene extends PIXI.Container {
   private app: PIXI.Application;
@@ -13,7 +13,7 @@ export class GameScene extends PIXI.Container {
   private board: Board;
   private betPanel: BetPanel;
   private statsPanel: StatsPanel;
-  private background: GradientBackground;
+  private background: AnimatedGradientBackground;
   private isInitialized: boolean = false;
   
   constructor(app: PIXI.Application) {
@@ -23,16 +23,21 @@ export class GameScene extends PIXI.Container {
     this.gameManager = GameManager.getInstance();
     this.connectionManager = ConnectionManager.getInstance();
     
-    // Create animated background
-    this.background = new GradientBackground(this.app.screen.width, this.app.screen.height);
+    // Create animated background with current screen dimensions
+    this.background = new AnimatedGradientBackground(
+      this.app.screen.width,
+      this.app.screen.height
+    );
+    
+    // Add the background as the first child (bottom layer)
     this.addChild(this.background);
     
-    // Create UI components (they'll be positioned later)
+    // Create UI components
     this.board = new Board(500, 500);
     this.betPanel = new BetPanel(300, 200);
     this.statsPanel = new StatsPanel(300, 200);
     
-    // Add them to the scene but don't position yet (will be done in layout)
+    // Add UI components
     this.addChild(this.board);
     this.addChild(this.betPanel);
     this.addChild(this.statsPanel);
@@ -59,9 +64,8 @@ export class GameScene extends PIXI.Container {
   }
   
   public onResize(): void {
-    // Resize background
-    this.background.width = this.app.screen.width;
-    this.background.height = this.app.screen.height;
+    // Update background size
+    this.background.resize(this.app.screen.width, this.app.screen.height);
     
     // Get current app dimensions
     const width = this.app.screen.width;
@@ -89,9 +93,11 @@ export class GameScene extends PIXI.Container {
   }
   
   public update(delta: number): void {
-    // Update background animation
-    this.background.update(delta);
+    // Update animated background
+    if (this.background) {
+      this.background.update(delta);
+    }
     
-    // Update other game logic here if needed
+    // Update other game components as needed
   }
 }
