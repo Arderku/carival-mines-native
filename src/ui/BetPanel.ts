@@ -35,11 +35,11 @@ export class BetPanel extends PIXI.Container {
     this.mines = 3;
     this.balance = 0;
     
-    // Initialize UI elements - updated for PIXI v8
+    // Initialize UI elements - updated for PIXI v8 with Futura font
     this.balanceText = new PIXI.Text({
       text: '0.00',
       style: { 
-        fontFamily: 'Arial',
+        fontFamily: 'Plus Jakarta Sans, Futura, Avenir, Arial, sans-serif',
         fontSize: 14,
         fontWeight: 'bold',
         fill: 0xFFFFFF 
@@ -49,7 +49,7 @@ export class BetPanel extends PIXI.Container {
     this.betAmountText = new PIXI.Text({
       text: '1.00',
       style: { 
-        fontFamily: 'Arial',
+        fontFamily: 'Plus Jakarta Sans, Futura, Avenir, Arial, sans-serif',
         fontSize: 14,
         fontWeight: 'bold',
         fill: 0xFFFFFF 
@@ -59,7 +59,7 @@ export class BetPanel extends PIXI.Container {
     this.minesText = new PIXI.Text({
       text: '3',
       style: { 
-        fontFamily: 'Arial',
+        fontFamily: 'Plus Jakarta Sans, Futura, Avenir, Arial, sans-serif',
         fontSize: 14,
         fontWeight: 'bold',
         fill: 0xFFFFFF 
@@ -72,7 +72,7 @@ export class BetPanel extends PIXI.Container {
     this.nextWinText = new PIXI.Text({
       text: 'Next win: 0.00',
       style: { 
-        fontFamily: 'Arial',
+        fontFamily: 'Plus Jakarta Sans, Futura, Avenir, Arial, sans-serif',
         fontSize: 14,
         fontWeight: 'bold',
         fill: 0xFFFFFF 
@@ -93,21 +93,27 @@ export class BetPanel extends PIXI.Container {
     this.addChild(panel);
     
     // Title
-    const title = new PIXI.Text('BET CONTROLS', {
-      fontFamily: 'Arial',
-      fontSize: 18,
-      fontWeight: 'bold',
-      fill: 0xFFFFFF
+    const title = new PIXI.Text({
+      text: 'BET CONTROLS',
+      style: {
+        fontFamily: 'Plus Jakarta Sans, Futura, Avenir, Arial, sans-serif',
+        fontSize: 18,
+        fontWeight: 'bold',
+        fill: 0xFFFFFF
+      }
     });
     title.x = 10;
     title.y = 10;
     this.addChild(title);
     
     // Balance
-    const balanceLabel = new PIXI.Text('Balance:', {
-      fontFamily: 'Arial',
-      fontSize: 14,
-      fill: 0xCCCCCC
+    const balanceLabel = new PIXI.Text({
+      text: 'Balance:',
+      style: {
+        fontFamily: 'Plus Jakarta Sans, Futura, Avenir, Arial, sans-serif',
+        fontSize: 14,
+        fill: 0xCCCCCC
+      }
     });
     balanceLabel.x = 10;
     balanceLabel.y = 40;
@@ -118,10 +124,13 @@ export class BetPanel extends PIXI.Container {
     this.addChild(this.balanceText);
     
     // Bet Amount
-    const betLabel = new PIXI.Text('Bet:', {
-      fontFamily: 'Arial',
-      fontSize: 14,
-      fill: 0xCCCCCC
+    const betLabel = new PIXI.Text({
+      text: 'Bet:',
+      style: {
+        fontFamily: 'Plus Jakarta Sans, Futura, Avenir, Arial, sans-serif',
+        fontSize: 14,
+        fill: 0xCCCCCC
+      }
     });
     betLabel.x = 10;
     betLabel.y = 70;
@@ -141,10 +150,13 @@ export class BetPanel extends PIXI.Container {
     this.addChild(increaseBet);
     
     // Mines
-    const minesLabel = new PIXI.Text('Mines:', {
-      fontFamily: 'Arial',
-      fontSize: 14,
-      fill: 0xCCCCCC
+    const minesLabel = new PIXI.Text({
+      text: 'Mines:',
+      style: {
+        fontFamily: 'Plus Jakarta Sans, Futura, Avenir, Arial, sans-serif',
+        fontSize: 14,
+        fill: 0xCCCCCC
+      }
     });
     minesLabel.x = 10;
     minesLabel.y = 100;
@@ -287,11 +299,14 @@ export class BetPanel extends PIXI.Container {
     container.addChild(background);
     
     // Button text
-    const text = new PIXI.Text(label, {
-      fontFamily: 'Arial',
-      fontSize: 14,
-      fontWeight: 'bold',
-      fill: 0xFFFFFF
+    const text = new PIXI.Text({
+      text: label,
+      style: {
+        fontFamily: 'Plus Jakarta Sans, Futura, Avenir, Arial, sans-serif',
+        fontSize: 14,
+        fontWeight: 'bold',
+        fill: 0xFFFFFF
+      }
     });
     text.anchor.set(0.5);
     text.x = width / 2;

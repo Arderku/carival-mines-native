@@ -23,40 +23,55 @@ export class StatsPanel extends PIXI.Container {
     this.panelWidth = width;
     this.panelHeight = height;
     
-    // Initialize UI elements
-    this.multiplierText = new PIXI.Text('Multiplier: 1.00x', { 
-      fontFamily: 'Arial',
-      fontSize: 14,
-      fontWeight: 'bold',
-      fill: 0xFFFFFF 
+    // Initialize UI elements with Futura font
+    this.multiplierText = new PIXI.Text({
+      text: 'Multiplier: 1.00x',
+      style: { 
+        fontFamily: 'Plus Jakarta Sans, Futura, Avenir, Arial, sans-serif',
+        fontSize: 14,
+        fontWeight: 'bold',
+        fill: 0xFFFFFF 
+      }
     });
     
-    this.winAmountText = new PIXI.Text('Win Amount: 0.00', { 
-      fontFamily: 'Arial',
-      fontSize: 14,
-      fontWeight: 'bold',
-      fill: 0xFFFFFF 
+    this.winAmountText = new PIXI.Text({
+      text: 'Win Amount: 0.00',
+      style: { 
+        fontFamily: 'Plus Jakarta Sans, Futura, Avenir, Arial, sans-serif',
+        fontSize: 14,
+        fontWeight: 'bold',
+        fill: 0xFFFFFF 
+      }
     });
     
-    this.tilesRevealedText = new PIXI.Text('Tiles: 0/25', { 
-      fontFamily: 'Arial',
-      fontSize: 14,
-      fontWeight: 'bold',
-      fill: 0xFFFFFF 
+    this.tilesRevealedText = new PIXI.Text({
+      text: 'Tiles: 0/25',
+      style: { 
+        fontFamily: 'Plus Jakarta Sans, Futura, Avenir, Arial, sans-serif',
+        fontSize: 14,
+        fontWeight: 'bold',
+        fill: 0xFFFFFF 
+      }
     });
     
-    this.minesText = new PIXI.Text('Mines: 3', { 
-      fontFamily: 'Arial',
-      fontSize: 14,
-      fontWeight: 'bold',
-      fill: 0xFFFFFF 
+    this.minesText = new PIXI.Text({
+      text: 'Mines: 3',
+      style: { 
+        fontFamily: 'Plus Jakarta Sans, Futura, Avenir, Arial, sans-serif',
+        fontSize: 14,
+        fontWeight: 'bold',
+        fill: 0xFFFFFF 
+      }
     });
     
-    this.gameStateText = new PIXI.Text('Game State: None', { 
-      fontFamily: 'Arial',
-      fontSize: 14,
-      fontWeight: 'bold',
-      fill: 0xFFFFFF 
+    this.gameStateText = new PIXI.Text({
+      text: 'Game State: None',
+      style: { 
+        fontFamily: 'Plus Jakarta Sans, Futura, Avenir, Arial, sans-serif',
+        fontSize: 14,
+        fontWeight: 'bold',
+        fill: 0xFFFFFF 
+      }
     });
     
     this.createPanel();
@@ -64,20 +79,23 @@ export class StatsPanel extends PIXI.Container {
   }
   
   private createPanel(): void {
-    // Background panel
+    // Background panel with branded colors
     const panel = new PIXI.Graphics();
-    panel.beginFill(0x333333);
-    panel.lineStyle(2, 0x555555);
+    panel.beginFill(0x333333); // var(--color-surface)
+    panel.lineStyle(2, 0x555555); // var(--color-border)
     panel.drawRoundedRect(0, 0, this.panelWidth, this.panelHeight, 10);
     panel.endFill();
     this.addChild(panel);
     
     // Title
-    const title = new PIXI.Text('GAME STATS', {
-      fontFamily: 'Arial',
-      fontSize: 18,
-      fontWeight: 'bold',
-      fill: 0xFFFFFF
+    const title = new PIXI.Text({
+      text: 'GAME STATS',
+      style: {
+        fontFamily: 'Plus Jakarta Sans, Futura, Avenir, Arial, sans-serif',
+        fontSize: 18,
+        fontWeight: 'bold',
+        fill: 0xFFFFFF
+      }
     });
     title.x = 10;
     title.y = 10;

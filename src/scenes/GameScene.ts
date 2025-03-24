@@ -4,6 +4,7 @@ import { BetPanel } from '../ui/BetPanel';
 import { StatsPanel } from '../ui/StatsPanel';
 import { GameManager } from '../managers/GameManager';
 import { ConnectionManager } from '../managers/ConnectionManager';
+import { GradientBackground } from '../ui/GradientBackground';
 
 export class GameScene extends PIXI.Container {
   private app: PIXI.Application;
@@ -12,6 +13,7 @@ export class GameScene extends PIXI.Container {
   private board: Board;
   private betPanel: BetPanel;
   private statsPanel: StatsPanel;
+  private background: GradientBackground;
   private isInitialized: boolean = false;
   
   constructor(app: PIXI.Application) {
@@ -20,6 +22,10 @@ export class GameScene extends PIXI.Container {
     this.app = app;
     this.gameManager = GameManager.getInstance();
     this.connectionManager = ConnectionManager.getInstance();
+    
+    // Create animated background
+    this.background = new GradientBackground(this.app.screen.width, this.app.screen.height);
+    this.addChild(this.background);
     
     // Create UI components (they'll be positioned later)
     this.board = new Board(500, 500);
@@ -33,9 +39,6 @@ export class GameScene extends PIXI.Container {
     
     // Initial layout
     this.onResize();
-    
-    // Listen for window resize events
-    window.addEventListener('resize', this.onResize.bind(this));
   }
   
   public async initialize(authToken: string): Promise<void> {
@@ -56,6 +59,10 @@ export class GameScene extends PIXI.Container {
   }
   
   public onResize(): void {
+    // Resize background
+    this.background.width = this.app.screen.width;
+    this.background.height = this.app.screen.height;
+    
     // Get current app dimensions
     const width = this.app.screen.width;
     const height = this.app.screen.height;
@@ -82,6 +89,9 @@ export class GameScene extends PIXI.Container {
   }
   
   public update(delta: number): void {
-    // Update game logic here if needed
+    // Update background animation
+    this.background.update(delta);
+    
+    // Update other game logic here if needed
   }
 }
