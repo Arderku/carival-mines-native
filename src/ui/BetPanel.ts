@@ -4,6 +4,7 @@ import { GameStatusType } from '../models/GameStatusType';
 import { UserInfoData } from '../models/UserInfoData';
 import { GameSessionData } from '../models/GameSessionData';
 import { PickTileResponse } from '../models/PickTileResponse';
+import { CashOutData } from '../models/CashOutData';
 
 export class BetPanel extends PIXI.Container {
   private gameManager: GameManager;
@@ -20,8 +21,9 @@ export class BetPanel extends PIXI.Container {
   private betAmountText: PIXI.Text;
   private minesText: PIXI.Text;
   private playButton: PIXI.Container;
-  private cashoutButton: PIXI.Container;
+  private actionButton: PIXI.Container; // Combined button for "Pick a Tile" and "Cash Out"
   private nextWinText: PIXI.Text;
+  private hasPickedFirstTile: boolean = false;
   
   constructor(width: number = 300, height: number = 200) {
     super();
@@ -67,7 +69,7 @@ export class BetPanel extends PIXI.Container {
     });
     
     this.playButton = this.createButton('PLAY', 0, 0, 120, 40, 0x44AA44);
-    this.cashoutButton = this.createButton('CASHOUT', 0, 0, 120, 40, 0xAA4444);
+    this.actionButton = this.createButton('PICK A TILE', 0, 0, 120, 40, 0x4444AA); 
     
     this.nextWinText = new PIXI.Text({
       text: 'Next win: 0.00',
@@ -185,11 +187,11 @@ export class BetPanel extends PIXI.Container {
     this.playButton.y = 160;
     this.addChild(this.playButton);
     
-    // Cashout button (initially hidden)
-    this.cashoutButton.x = 140;
-    this.cashoutButton.y = 160;
-    this.cashoutButton.visible = false;
-    this.addChild(this.cashoutButton);
+    // Action button (initially hidden)
+    this.actionButton.x = 10;
+    this.actionButton.y = 160;
+    this.actionButton.visible = false;
+    this.addChild(this.actionButton);
   }
   
   private setupEventListeners(): void {
@@ -201,7 +203,7 @@ export class BetPanel extends PIXI.Container {
     
     // Button event listeners
     this.playButton.on('pointerdown', this.onPlayButtonClicked.bind(this));
-    this.cashoutButton.on('pointerdown', this.onCashoutButtonClicked.bind(this));
+    this.actionButton.on('pointerdown', this.onActionButtonClicked.bind(this));
   }
   
   private onUserInfoUpdated(userInfo: UserInfoData): void {
@@ -212,7 +214,11 @@ export class BetPanel extends PIXI.Container {
   private onGameSessionStarted(sessionData: GameSessionData): void {
     // Update UI for active game
     this.playButton.visible = false;
-    this.cashoutButton.visible = true;
+    
+    // Show "Pick a Tile" initially
+    this.hasPickedFirstTile = false;
+    this.updateActionButton();
+    
     this.updateNextWinText(sessionData.nextWinAmount);
     this.updateBalanceText();
   }
@@ -221,17 +227,23 @@ export class BetPanel extends PIXI.Container {
     // Update the next win amount
     this.updateNextWinText(data.nextWinAmount);
     
+    // If first tile picked, change button to "Cash Out"
+    if (!this.hasPickedFirstTile && data.tiles.length > 0) {
+      this.hasPickedFirstTile = true;
+      this.updateActionButton();
+    }
+    
     // If the game ended, update UI
     if (data.hitMine || data.status === 'COMPLETED') {
       this.playButton.visible = true;
-      this.cashoutButton.visible = false;
+      this.actionButton.visible = false;
     }
   }
   
   private onCashOutReceived(): void {
     // Update UI for game ended
     this.playButton.visible = true;
-    this.cashoutButton.visible = false;
+    this.actionButton.visible = false;
     this.updateNextWinText(0);
     
     // Update balance
@@ -249,12 +261,52 @@ export class BetPanel extends PIXI.Container {
       });
   }
   
-  private onCashoutButtonClicked(): void {
-    // Cash out current game
-    this.gameManager.cashOut()
-      .catch(error => {
-        console.error('Failed to cash out:', error);
-      });
+  private onActionButtonClicked(): void {
+    // If we've picked the first tile, this is a cash out button
+    if (this.hasPickedFirstTile) {
+      this.gameManager.cashOut()
+        .catch(error => {
+          console.error('Failed to cash out:', error);
+        });
+    }
+    // If we haven't picked the first tile, the button does nothing
+    // (it just shows instruction text)
+  }
+  
+  private updateActionButton(): void {
+    // Show action button
+    this.actionButton.visible = true;
+    
+    // Update text and color based on state
+    if (this.hasPickedFirstTile) {
+      // Change to "Cash Out" button
+      this.updateButtonText(this.actionButton, 'CASH OUT');
+      this.updateButtonColor(this.actionButton, 0xAA4444);
+    } else {
+      // "Pick a Tile" instruction
+      this.updateButtonText(this.actionButton, 'PICK A TILE');
+      this.updateButtonColor(this.actionButton, 0x4444AA);
+    }
+  }
+  
+  private updateButtonText(button: PIXI.Container, text: string): void {
+    // Find the text object in the button container
+    const textObject = button.children.find(child => child instanceof PIXI.Text) as PIXI.Text;
+    if (textObject) {
+      textObject.text = text;
+    }
+  }
+  
+  private updateButtonColor(button: PIXI.Container, color: number): void {
+    // Find the background graphics in the button container
+    const background = button.children.find(child => child instanceof PIXI.Graphics) as PIXI.Graphics;
+    if (background) {
+      background.clear();
+      background.beginFill(color);
+      background.lineStyle(2, 0x333333);
+      background.drawRoundedRect(0, 0, (button as any).width || 120, (button as any).height || 40, 5);
+      background.endFill();
+    }
   }
   
   private adjustBet(amount: number): void {
@@ -289,6 +341,10 @@ export class BetPanel extends PIXI.Container {
     const container = new PIXI.Container();
     container.x = x;
     container.y = y;
+    
+    // Set width and height properties on the container
+    (container as any).width = width;
+    (container as any).height = height;
     
     // Button background
     const background = new PIXI.Graphics();
