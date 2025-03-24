@@ -158,4 +158,14 @@ export class Board extends PIXI.Container {
       }
     });
   }
+
+  public resize(width: number, height: number): void {
+    this.boardWidth = width;
+    this.boardHeight = height;
+    this.tileSize = Math.min(
+      (this.boardWidth / this.cols),
+      (this.boardHeight / this.rows)
+    );
+    this.createBoard();
+  }
 }

@@ -4,13 +4,22 @@ import { GameScene } from './scenes/GameScene';
 export class App {
   public app: Application;
   private gameScene: GameScene | null = null;
+  private isMobile: boolean = false;
   
   constructor() {
     // Create the application instance
     this.app = new Application();
     
+    // Check if running on mobile
+    this.isMobile = this.checkIfMobile();
+    
     // Initialize application
     this.init();
+  }
+  
+  private checkIfMobile(): boolean {
+    return /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) 
+      || (window.innerWidth < 768);
   }
   
   private async init(): Promise<void> {
@@ -18,20 +27,22 @@ export class App {
       // Show loading indicator
       this.showLoading();
       
-      // Initialize the PIXI application
+      // Initialize the PIXI application with adaptive dimensions
       await this.app.init({
         background: '#1a1a1a',
-        resizeTo: window
+        width: window.innerWidth,
+        height: window.innerHeight,
+        resolution: window.devicePixelRatio || 1,
+        autoDensity: true,
+        hello: false // Disable the Pixi.js logo
       });
       
       // Append the canvas to the container
       document.getElementById('pixi-container')!.appendChild(this.app.canvas);
       
-      // Add logo to the page
-      this.addLogo();
       
       // Create and initialize the game scene
-      this.gameScene = new GameScene(this.app);
+      this.gameScene = new GameScene(this.app, this.isMobile);
       this.app.stage.addChild(this.gameScene);
       
       // Hide loading indicator
@@ -50,10 +61,11 @@ export class App {
       
       // Handle window resize
       window.addEventListener('resize', () => {
-        if (this.gameScene) {
-          this.gameScene.onResize();
-        }
+        this.handleResize();
       });
+      
+      // Initial resize
+      this.handleResize();
       
     } catch (error) {
       console.error('Failed to initialize the application:', error);
@@ -62,11 +74,39 @@ export class App {
     }
   }
   
+  private handleResize(): void {
+    // Check if mobile status has changed
+    const wasMobile = this.isMobile;
+    this.isMobile = this.checkIfMobile();
+    
+    // If mobile status changed, recreate the game scene
+    if (wasMobile !== this.isMobile && this.gameScene) {
+      const authToken = this.gameScene.getAuthToken();
+      this.app.stage.removeChild(this.gameScene);
+      this.gameScene = new GameScene(this.app, this.isMobile);
+      this.app.stage.addChild(this.gameScene);
+      this.gameScene.initialize(authToken);
+    }
+    
+    // Resize renderer to match window
+    this.app.renderer.resize(window.innerWidth, window.innerHeight);
+    
+    // Update game scene layout
+    if (this.gameScene) {
+      this.gameScene.onResize();
+    }
+  }
+  
   private addLogo(): void {
     const logo = document.createElement('img');
     logo.src = 'assets/logo.svg';
     logo.alt = 'Casino Mines Logo';
     logo.className = 'game-logo';
+    logo.style.position = 'absolute';
+    logo.style.top = '10px';
+    logo.style.left = '10px';
+    logo.style.height = '40px';
+    logo.style.zIndex = '100';
     document.body.appendChild(logo);
   }
   

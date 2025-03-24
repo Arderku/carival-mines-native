@@ -8,6 +8,8 @@ export class StatsPanel extends PIXI.Container {
   private gameManager: GameManager;
   private panelWidth: number;
   private panelHeight: number;
+  private isPortrait: boolean;
+  private background!: PIXI.Graphics;
   
   // UI elements
   private multiplierText: PIXI.Text;
@@ -16,12 +18,13 @@ export class StatsPanel extends PIXI.Container {
   private minesText: PIXI.Text;
   private gameStateText: PIXI.Text;
   
-  constructor(width: number = 300, height: number = 200) {
+  constructor(width: number = 300, height: number = 200, isPortrait: boolean = true) {
     super();
     
     this.gameManager = GameManager.getInstance();
     this.panelWidth = width;
     this.panelHeight = height;
+    this.isPortrait = isPortrait;
     
     // Initialize UI elements with Futura font
     this.multiplierText = new PIXI.Text({
@@ -35,7 +38,7 @@ export class StatsPanel extends PIXI.Container {
     });
     
     this.winAmountText = new PIXI.Text({
-      text: 'Win Amount: 0.00',
+      text: 'Win: 0.00',
       style: { 
         fontFamily: 'Plus Jakarta Sans, Futura, Avenir, Arial, sans-serif',
         fontSize: 14,
@@ -74,52 +77,118 @@ export class StatsPanel extends PIXI.Container {
       }
     });
     
+    // Create the panel
     this.createPanel();
     this.setupEventListeners();
   }
   
+  public resize(width: number, height: number, isPortrait: boolean = this.isPortrait): void {
+    this.panelWidth = width;
+    this.panelHeight = height;
+    this.isPortrait = isPortrait;
+    
+    // Redraw the panel
+    this.removeChildren();
+    this.createPanel();
+  }
+  
   private createPanel(): void {
-    // Background panel with branded colors
-    const panel = new PIXI.Graphics();
-    panel.beginFill(0x333333); // var(--color-surface)
-    panel.lineStyle(2, 0x555555); // var(--color-border)
-    panel.drawRoundedRect(0, 0, this.panelWidth, this.panelHeight, 10);
-    panel.endFill();
-    this.addChild(panel);
+    // Background panel
+    this.background = new PIXI.Graphics();
+    this.background.beginFill(0x333333, 0.8);
+    this.background.lineStyle(2, 0xE72264);
+    this.background.drawRoundedRect(0, 0, this.panelWidth, this.panelHeight, 15);
+    this.background.endFill();
+    this.addChild(this.background);
     
     // Title
     const title = new PIXI.Text({
       text: 'GAME STATS',
       style: {
         fontFamily: 'Plus Jakarta Sans, Futura, Avenir, Arial, sans-serif',
-        fontSize: 18,
+        fontSize: 16,
         fontWeight: 'bold',
         fill: 0xFFFFFF
       }
     });
-    title.x = 10;
+    title.x = 15;
     title.y = 10;
     this.addChild(title);
     
-    // Stats
-    this.multiplierText.x = 10;
-    this.multiplierText.y = 40;
+    // Adjust font size based on panel dimensions
+    const fontSize = Math.max(12, Math.min(14, this.panelHeight * 0.1));
+    
+    // Update font sizes
+    this.multiplierText.style.fontSize = fontSize;
+    this.winAmountText.style.fontSize = fontSize;
+    this.tilesRevealedText.style.fontSize = fontSize;
+    this.minesText.style.fontSize = fontSize;
+    this.gameStateText.style.fontSize = fontSize;
+    
+    if (this.isPortrait) {
+      this.createPortraitLayout();
+    } else {
+      this.createLandscapeLayout();
+    }
+  }
+  
+  private createPortraitLayout(): void {
+    // More compact layout for portrait mode
+    const columnWidth = this.panelWidth / 2;
+    
+    // Calculate vertical positions based on panel height
+    const startY = this.panelHeight * 0.35; // Closer to top
+    const lineHeight = Math.min(this.panelHeight * 0.25, 20); // Limit line height
+    
+    // Left column
+    this.multiplierText.x = 15;
+    this.multiplierText.y = startY;
     this.addChild(this.multiplierText);
     
-    this.winAmountText.x = 10;
-    this.winAmountText.y = 70;
+    this.winAmountText.x = 15;
+    this.winAmountText.y = startY + lineHeight;
     this.addChild(this.winAmountText);
     
-    this.tilesRevealedText.x = 10;
-    this.tilesRevealedText.y = 100;
+    // Right column
+    this.tilesRevealedText.x = columnWidth + 15;
+    this.tilesRevealedText.y = startY;
     this.addChild(this.tilesRevealedText);
     
-    this.minesText.x = 10;
-    this.minesText.y = 130;
+    this.minesText.x = columnWidth + 15;
+    this.minesText.y = startY + lineHeight;
     this.addChild(this.minesText);
     
-    this.gameStateText.x = 10;
-    this.gameStateText.y = 160;
+    // Game state at bottom, less spacing
+    this.gameStateText.x = this.panelWidth / 2 - this.gameStateText.width / 2;
+    this.gameStateText.y = this.panelHeight * 0.7; // Higher up
+    this.addChild(this.gameStateText);
+  }
+  
+  private createLandscapeLayout(): void {
+    // For landscape mode, arrange stats in one column
+    const startY = this.panelHeight * 0.25;
+    const lineHeight = this.panelHeight * 0.15;
+    
+    // Stack items vertically
+    this.multiplierText.x = 15;
+    this.multiplierText.y = startY;
+    this.addChild(this.multiplierText);
+    
+    this.winAmountText.x = 15;
+    this.winAmountText.y = startY + lineHeight;
+    this.addChild(this.winAmountText);
+    
+    this.tilesRevealedText.x = 15;
+    this.tilesRevealedText.y = startY + lineHeight * 2;
+    this.addChild(this.tilesRevealedText);
+    
+    this.minesText.x = 15;
+    this.minesText.y = startY + lineHeight * 3;
+    this.addChild(this.minesText);
+    
+    // Game state at the bottom
+    this.gameStateText.x = 15;
+    this.gameStateText.y = startY + lineHeight * 4;
     this.addChild(this.gameStateText);
   }
   
@@ -178,5 +247,10 @@ export class StatsPanel extends PIXI.Container {
   
   private updateGameStateText(state: string): void {
     this.gameStateText.text = `Game State: ${state}`;
+    
+    // Re-center in portrait mode
+    if (this.isPortrait) {
+      this.gameStateText.x = this.panelWidth / 2 - this.gameStateText.width / 2;
+    }
   }
 }
